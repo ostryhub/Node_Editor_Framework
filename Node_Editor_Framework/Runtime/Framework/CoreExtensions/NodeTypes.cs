@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
-
+using System.Runtime.CompilerServices;
 using NodeEditorFramework.Utilities;
 
 namespace NodeEditorFramework 
@@ -23,7 +23,9 @@ namespace NodeEditorFramework
 			nodes = new Dictionary<string, NodeTypeData> ();
 			foreach (Type type in ReflectionUtility.getSubTypes (typeof(Node)))	
 			{
-				object[] nodeAttributes = type.GetCustomAttributes(typeof(NodeAttribute), false);                    
+				object[] nodeAttributes = type.GetCustomAttributes(typeof(NodeAttribute), false);
+				if (nodeAttributes.Length < 1) continue;
+				
 				NodeAttribute attr = nodeAttributes[0] as NodeAttribute;
 				if(attr == null || !attr.hide)
 				{ // Only regard if it is not marked as hidden
@@ -40,9 +42,12 @@ namespace NodeEditorFramework
 					else // Can read ID directly from const field
 						ID = (string)IDField.GetValue(null);
 					// Create Data from information
+
+					var contextText = attr.contextText ?? type.Name;
+					
 					NodeTypeData data = attr == null?  // Switch between explicit information by the attribute or node information
 						new NodeTypeData(ID, Title, type, new Type[0]) :
-						new NodeTypeData(ID, attr.contextText, type, attr.limitToCanvasTypes);
+						new NodeTypeData(ID, contextText, type, attr.limitToCanvasTypes);
 					nodes.Add (ID, data);
 				}
 			}
@@ -113,7 +118,7 @@ namespace NodeEditorFramework
 		public string contextText { get; private set; }
 		public Type[] limitToCanvasTypes { get; private set; }
 
-		public NodeAttribute (bool HideNode, string ReplacedContextText, params Type[] limitedCanvasTypes)
+		public NodeAttribute (bool HideNode, string ReplacedContextText = default, params Type[] limitedCanvasTypes)
 		{
 			hide = HideNode;
 			contextText = ReplacedContextText;

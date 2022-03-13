@@ -47,7 +47,7 @@ namespace NodeEditorFramework
 		/// <summary>
 		/// Gets the ID of the Node
 		/// </summary>
-		public abstract string GetID { get; }
+		public string GetID => this.GetType().Name;
 
 		/// <summary>
 		/// Specifies the node title.

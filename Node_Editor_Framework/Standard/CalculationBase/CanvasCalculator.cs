@@ -15,6 +15,8 @@ namespace NodeEditorFramework.Standard
 		/// </summary>
 		public override void TraverseAll () 
 		{
+			Debug.Log("TraverseAll");
+			
 			workList = new List<Node> ();
 			for (int i = 0; i < nodeCanvas.nodes.Count; i++) 
 			{
